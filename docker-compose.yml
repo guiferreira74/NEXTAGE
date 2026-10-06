@@ -1,0 +1,47 @@
+services:
+
+  banco:
+    image: postgres:latest
+    container_name: pdbbackm
+    environment:
+      POSTGRES_DB: lojapc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./backup-lojapc.sql:/docker-entrypoint-initdb.d/backup-lojapc.sql:ro
+    networks:
+      backm_rede_001:
+        aliases:
+          - pdbbackm
+
+  backend:
+    build:
+      context: ./backend
+    image: server-loja
+    container_name: backend-loja
+    ports:
+      - "8080:8080"
+    depends_on:
+      - banco
+    networks:
+      - backm_rede_001
+
+  frontend:
+    build:
+      context: ./frontend
+    image: frontend-loja
+    container_name: frontend-loja
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+networks:
+  backm_rede_001:
+    name: backm_rede_001
+
+volumes:
+  postgres_data:

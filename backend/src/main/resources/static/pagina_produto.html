@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <title>Produtos</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container">
+
+<script>
+  const obterProdutos = () => {
+    $.ajax({
+      url: "/produtos",
+      success: (produtos) => {
+        let conteudo = "";
+        for (let p of produtos) {
+          conteudo += `
+            <tr>
+              <td>${p.id}</td>
+              <td>${p.nome}</td>
+              <td>${p.quantidade}</td>
+              <td>${p.descricao}</td>
+              <td>R$${p.preco}</td>
+              <td><img src="/images/img-uploads/${p.imagem}" width="100">
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="editarProduto(${p.id})">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="excluirProduto(${p.id})">Excluir</button>
+              </td>
+            </tr>`;
+        }
+        $("#produtos").html(conteudo);
+      }
+    });
+  }
+
+  $(() => {
+    obterProdutos();
+    $("#btnincluir").on("click", incluirProduto);
+  });
+
+  const incluirProduto = () => {
+    let formData = new FormData();
+    formData.append("nome", $("#nome").val());
+    formData.append("quantidade", $("#quantidade").val());
+    formData.append("descricao", $("#descricao").val());
+    formData.append("preco", $("#preco").val());
+    formData.append("imagem", $("#imagem")[0].files[0]);
+
+    $.ajax({
+      url: "/produtos",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: () => {
+        obterProdutos();
+        limparFormulario();
+      }
+    });
+  }
+
+  const excluirProduto = (id) => {
+    $.ajax({
+      url: `/produtos/${id}`,
+      type: "DELETE",
+      success: () => {
+        obterProdutos();
+      }
+    });
+  }
+
+  const editarProduto = (id) => {
+    $.ajax({
+      url: `/produtos/${id}`,
+      type: "GET",
+      success: (p) => {
+        $("#nome").val(p.nome);
+        $("#quantidade").val(p.quantidade);
+        $("#descricao").val(p.descricao);
+        $("#preco").val(p.preco);
+
+        $("#btnincluir").text("Salvar edição");
+        $("#btnincluir").off("click").on("click", () => {
+          let formData = new FormData();
+          formData.append("nome", $("#nome").val());
+          formData.append("quantidade", $("#quantidade").val());
+          formData.append("descricao", $("#descricao").val());
+          formData.append("preco", $("#preco").val());
+          if ($("#imagem")[0].files.length > 0) {
+            formData.append("imagem", $("#imagem")[0].files[0]);
+          }
+
+          $.ajax({
+            url: `/produtos/${id}`,
+            type: "PUT",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: () => {
+              obterProdutos();
+              limparFormulario();
+              $("#btnincluir").text("Incluir");
+              $("#btnincluir").off("click").on("click", incluirProduto);
+            }
+          });
+        });
+      }
+    });
+  }
+
+  const limparFormulario = () => {
+    $("#nome").val("");
+    $("#quantidade").val("");
+    $("#descricao").val("");
+    $("#preco").val("");
+    $("#imagem").val("");
+  }
+</script>
+
+<div class="form">
+  <label class="form-label">Nome:</label>
+  <input class="form-control" type="text" id="nome" /><br />
+  <label class="form-label">Quantidade:</label>
+  <input class="form-control" type="number" id="quantidade" /><br />
+  <label class="form-label">Descrição:</label>
+  <input class="form-control form-control-lg" type="text" id="descricao" /><br />
+  <label class="form-label">Preço:</label>
+  <input class="form-control" type="number" id="preco" /><br />
+  <label class="form-label">Imagem:</label>
+  <input class="form-control" type="file" id="imagem" /><br />
+  <button class="btn btn-primary" id="btnincluir">Incluir</button>
+</div>
+
+<table class="table table-striped mt-4">
+  <thead class="table-dark">
+    <tr>
+      <td>Id</td>
+      <td>Nome</td>
+      <td>Quantidade</td>
+      <td>Descrição</td>
+      <td>Preço</td>
+      <td>Imagem</td>
+      <td>Opções</td>
+    </tr>
+  </thead>
+  <tbody id="produtos"></tbody>
+</table>
+
+</body>
+</html>
