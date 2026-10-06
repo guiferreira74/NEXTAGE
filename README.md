@@ -166,8 +166,6 @@ Projeto desenvolvido para fins acadêmicos, utilizando uma arquitetura com **fro
 
 ## 👥 Integrantes
 
-## 👥 Integrantes
-
 - Gabriel de Lima Ayres Tinoco
 - Brenda Cardozo Pereira
 - Gustavo Santos de Almeida
