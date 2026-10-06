@@ -166,4 +166,10 @@ Projeto desenvolvido para fins acadêmicos, utilizando uma arquitetura com **fro
 
 ## 👥 Integrantes
 
-- Adicionar nome dos integrantes
+## 👥 Integrantes
+
+- Gabriel de Lima Ayres Tinoco
+- Brenda Cardozo Pereira
+- Gustavo Santos de Almeida
+- Matheus Paiva David
+- Guilherme Ferreira Alves Biserra
